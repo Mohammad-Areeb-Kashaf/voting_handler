@@ -146,6 +146,9 @@ class CandidateController extends GetxController {
                                   final CandidateModel candidateModel =
                                       CandidateModel.fromJson(
                                           snapshot.data!.docs[index].data());
+                                  if (index == 0) {
+                                    candidates.value = [];
+                                  }
                                   candidates.add(candidateModel);
                                   return Padding(
                                     padding: const EdgeInsets.all(8.0),
@@ -194,14 +197,21 @@ class CandidateController extends GetxController {
   addCandidate({required CandidateModel candidateModel}) async {
     await _firestore
         .collection('candidates')
-        .doc(candidates.length.toString())
+        .doc((candidateModel.name).toString())
         .set(candidateModel.toJson());
   }
 
-  updateCandidate({required int index}) async {
+  updateCandidate({required CandidateModel candidateModel}) async {
     await _firestore
         .collection('candidates')
-        .doc(index.toString())
-        .update(candidates[index].toJson());
+        .doc(candidateModel.name)
+        .set(candidateModel.toJson());
+  }
+
+  deleteCandidate({required int index}) async {
+    await _firestore
+        .collection('candidates')
+        .doc(candidates[index].name)
+        .delete();
   }
 }

@@ -20,6 +20,6 @@ class Routes {
     GetPage(
         name: candidateEdittable, page: () => const CandidateEdittableScreen()),
     GetPage(name: candidateAdd, page: () => const CandidateAddScreen()),
-    GetPage(name: candidateEdit, page: () => const CandidateEditScreen()),
+    GetPage(name: candidateEdit, page: () => CandidateEditScreen()),
   ];
 }
