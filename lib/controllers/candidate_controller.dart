@@ -56,9 +56,9 @@ class CandidateController extends GetxController {
                                             BorderRadius.circular(8.0),
                                       ),
                                       onPressed: () {
-                                        Get.toNamed("/candidate_edit");
+                                        Get.toNamed("/candidate_edittable");
                                       },
-                                      child: const Text('Edit'),
+                                      child: const Text('Add / Edit'),
                                     ),
                                   ],
                                 ),
@@ -163,7 +163,8 @@ class CandidateController extends GetxController {
                                         style: const TextStyle(fontSize: 14),
                                       ),
                                       trailing: MaterialButton(
-                                        onPressed: () {},
+                                        onPressed: () => Get.toNamed(
+                                            "/candidate_edit?index=$index"),
                                         shape: RoundedRectangleBorder(
                                             side: const BorderSide(
                                                 color: Colors.black),
@@ -190,10 +191,17 @@ class CandidateController extends GetxController {
     );
   }
 
-  updateCandidates() async {
-    for (int i = 0; i < candidates.length; i++) {
-      Map<String, dynamic> data = candidates[i].toJson();
-      await _firestore.collection('candidates').doc(data['name']).set(data);
-    }
+  addCandidate({required CandidateModel candidateModel}) async {
+    await _firestore
+        .collection('candidates')
+        .doc(candidates.length.toString())
+        .set(candidateModel.toJson());
+  }
+
+  updateCandidate({required int index}) async {
+    await _firestore
+        .collection('candidates')
+        .doc(index.toString())
+        .update(candidates[index].toJson());
   }
 }

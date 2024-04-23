@@ -26,6 +26,9 @@ class MyApp extends StatelessWidget {
       getPages: Routes.routes,
       title: 'Voting Handler',
       theme: ThemeData(
+        colorScheme: const ColorScheme.light(
+          primary: Color.fromRGBO(26, 35, 126, 1),
+        ),
         useMaterial3: true,
       ),
       home: const HomeScreen(),
