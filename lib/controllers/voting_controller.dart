@@ -14,11 +14,13 @@ class VotingController extends GetxController {
       stream: _firestore.collection('voting').snapshots(),
       builder: (context, snapshot) {
         if (snapshot.connectionState == ConnectionState.waiting) {
-          return const Center(child: CircularProgressIndicator());
+          return const Scaffold(
+              body: Center(child: CircularProgressIndicator()));
         } else if (snapshot.hasError) {
-          return Center(child: Text('Error: ${snapshot.error}'));
+          return Scaffold(
+              body: Center(child: Text('Error: ${snapshot.error}')));
         } else if (!snapshot.hasData) {
-          return const Center(child: Text('No data available'));
+          return const Scaffold(body: Center(child: Text('No data available')));
         } else {
           final doc = snapshot.data!.docs[0].data();
           isBallotEnabled.value = doc['is_ballot_enabled'];
