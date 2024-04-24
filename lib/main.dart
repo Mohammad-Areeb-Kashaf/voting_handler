@@ -1,7 +1,7 @@
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-import 'package:voting_handler/controllers/candidate_controller.dart';
+import 'package:voting_handler/binding.dart';
 import 'package:voting_handler/firebase_options.dart';
 import 'package:voting_handler/screens/home_screen.dart';
 
@@ -9,6 +9,7 @@ import 'routes/routes.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
+
   await Firebase.initializeApp(
     options: DefaultFirebaseOptions.currentPlatform,
   );
@@ -20,7 +21,6 @@ class MyApp extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    Get.put(CandidateController());
     return GetMaterialApp(
       initialRoute: Routes.getHomeRoute(),
       getPages: Routes.routes,
@@ -32,6 +32,7 @@ class MyApp extends StatelessWidget {
         useMaterial3: true,
       ),
       home: const HomeScreen(),
+      initialBinding: Binding(),
     );
   }
 }

@@ -3,17 +3,20 @@ import 'package:voting_handler/screens/candidate_add_screen.dart';
 import 'package:voting_handler/screens/candidate_edit_screen.dart';
 import 'package:voting_handler/screens/candidate_edittable_screen.dart';
 import 'package:voting_handler/screens/home_screen.dart';
+import 'package:voting_handler/screens/results_screen.dart';
 
 class Routes {
   static String home = "/home";
   static String candidateEdittable = "/candidate_edittable";
   static String candidateAdd = "/candidate_add";
   static String candidateEdit = "/candidate_edit";
+  static String results = "/results";
 
   static String getHomeRoute() => home;
   static String getCandidateEdittableRoute() => candidateEdittable;
   static String getCandidateAddRoute() => candidateAdd;
   static String getCandidateEditRoute() => candidateEdit;
+  static String getResultsRoute() => results;
 
   static List<GetPage> routes = [
     GetPage(name: home, page: () => const HomeScreen()),
@@ -21,5 +24,6 @@ class Routes {
         name: candidateEdittable, page: () => const CandidateEdittableScreen()),
     GetPage(name: candidateAdd, page: () => const CandidateAddScreen()),
     GetPage(name: candidateEdit, page: () => CandidateEditScreen()),
+    GetPage(name: results, page: () => ResultsScreen())
   ];
 }

@@ -13,7 +13,10 @@ class CandidateController extends GetxController {
     getCandidates();
   }
 
-  Widget getCandidates({bool isEdit = false}) {
+  Widget getCandidates(
+      {bool isEdit = false,
+      Function? onBallotPressed,
+      Function? onResultsPressed}) {
     return StreamBuilder(
       stream: _firestore.collection('candidates').snapshots(),
       builder: (context, snapshot) {
@@ -24,10 +27,14 @@ class CandidateController extends GetxController {
         } else if (!snapshot.hasData) {
           return const Center(child: Text('No data available'));
         } else {
+          if (snapshot.data!.docs.isEmpty) {
+            candidates.value = [];
+          }
           return isEdit != true
               ? SingleChildScrollView(
                   child: SafeArea(
                     child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.stretch,
                       children: [
                         Container(
                           padding: const EdgeInsets.all(8.0),
@@ -36,7 +43,6 @@ class CandidateController extends GetxController {
                               borderRadius: BorderRadius.circular(8.0),
                               border: Border.all(color: Colors.black)),
                           child: Column(
-                            crossAxisAlignment: CrossAxisAlignment.start,
                             children: [
                               Padding(
                                 padding: const EdgeInsets.all(8.0),
@@ -63,34 +69,43 @@ class CandidateController extends GetxController {
                                   ],
                                 ),
                               ),
-                              ListView.builder(
-                                physics: const NeverScrollableScrollPhysics(),
-                                shrinkWrap: true,
-                                itemCount: snapshot.data!.docs.length,
-                                itemBuilder: (context, index) {
-                                  final CandidateModel candidateModel =
-                                      CandidateModel.fromJson(
-                                          snapshot.data!.docs[index].data());
-                                  candidates.add(candidateModel);
-                                  return Padding(
-                                    padding: const EdgeInsets.all(8.0),
-                                    child: ListTile(
-                                      shape: RoundedRectangleBorder(
-                                          side: const BorderSide(
-                                              color: Colors.black),
-                                          borderRadius:
-                                              BorderRadius.circular(8.0)),
-                                      leading: Image.network(
-                                        candidateModel.symbolImageUrl,
-                                      ),
-                                      title: Text(
-                                        candidateModel.name,
-                                        style: const TextStyle(fontSize: 14),
-                                      ),
+                              snapshot.data!.docs.isNotEmpty
+                                  ? ListView.builder(
+                                      physics:
+                                          const NeverScrollableScrollPhysics(),
+                                      shrinkWrap: true,
+                                      itemCount: snapshot.data!.docs.length,
+                                      itemBuilder: (context, index) {
+                                        final CandidateModel candidateModel =
+                                            CandidateModel.fromJson(snapshot
+                                                .data!.docs[index]
+                                                .data());
+                                        candidates.add(candidateModel);
+                                        return Padding(
+                                          padding: const EdgeInsets.all(8.0),
+                                          child: ListTile(
+                                            shape: RoundedRectangleBorder(
+                                                side: const BorderSide(
+                                                    color: Colors.black),
+                                                borderRadius:
+                                                    BorderRadius.circular(8.0)),
+                                            leading: Image.network(
+                                              candidateModel.symbolImageUrl,
+                                            ),
+                                            title: Text(
+                                              candidateModel.name,
+                                              style:
+                                                  const TextStyle(fontSize: 14),
+                                            ),
+                                          ),
+                                        );
+                                      },
+                                    )
+                                  : const Padding(
+                                      padding: EdgeInsets.all(16.0),
+                                      child: Text(
+                                          'No candidates. Please add Candidates'),
                                     ),
-                                  );
-                                },
-                              ),
                             ],
                           ),
                         ),
@@ -100,7 +115,7 @@ class CandidateController extends GetxController {
                             mainAxisAlignment: MainAxisAlignment.spaceBetween,
                             children: [
                               MaterialButton(
-                                onPressed: () {},
+                                onPressed: () => onResultsPressed!(),
                                 shape: RoundedRectangleBorder(
                                     side: const BorderSide(color: Colors.black),
                                     borderRadius: BorderRadius.circular(8.0)),
@@ -110,7 +125,7 @@ class CandidateController extends GetxController {
                                 ),
                               ),
                               MaterialButton(
-                                onPressed: () {},
+                                onPressed: () => onBallotPressed!(),
                                 shape: RoundedRectangleBorder(
                                     borderRadius: BorderRadius.circular(8.0)),
                                 color: Colors.indigo.shade900,
@@ -129,6 +144,7 @@ class CandidateController extends GetxController {
               : SingleChildScrollView(
                   child: SafeArea(
                     child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.stretch,
                       children: [
                         Container(
                           margin: const EdgeInsets.all(16.0),
@@ -136,52 +152,62 @@ class CandidateController extends GetxController {
                               borderRadius: BorderRadius.circular(8.0),
                               border: Border.all(color: Colors.black)),
                           child: Column(
-                            crossAxisAlignment: CrossAxisAlignment.start,
                             children: [
-                              ListView.builder(
-                                physics: const NeverScrollableScrollPhysics(),
-                                shrinkWrap: true,
-                                itemCount: snapshot.data!.docs.length,
-                                itemBuilder: (context, index) {
-                                  final CandidateModel candidateModel =
-                                      CandidateModel.fromJson(
-                                          snapshot.data!.docs[index].data());
-                                  if (index == 0) {
-                                    candidates.value = [];
-                                  }
-                                  candidates.add(candidateModel);
-                                  return Padding(
-                                    padding: const EdgeInsets.all(8.0),
-                                    child: ListTile(
-                                      shape: RoundedRectangleBorder(
-                                          side: const BorderSide(
-                                              color: Colors.black),
-                                          borderRadius:
-                                              BorderRadius.circular(8.0)),
-                                      leading: Image.network(
-                                        candidateModel.symbolImageUrl,
-                                      ),
-                                      title: Text(
-                                        candidateModel.name,
-                                        style: const TextStyle(fontSize: 14),
-                                      ),
-                                      trailing: MaterialButton(
-                                        onPressed: () => Get.toNamed(
-                                            "/candidate_edit?index=$index"),
-                                        shape: RoundedRectangleBorder(
-                                            side: const BorderSide(
-                                                color: Colors.black),
-                                            borderRadius:
-                                                BorderRadius.circular(8.0)),
-                                        child: const Text(
-                                          'Edit',
-                                          style: TextStyle(color: Colors.black),
-                                        ),
-                                      ),
+                              snapshot.data!.docs.isNotEmpty
+                                  ? ListView.builder(
+                                      physics:
+                                          const NeverScrollableScrollPhysics(),
+                                      shrinkWrap: true,
+                                      itemCount: snapshot.data!.docs.length,
+                                      itemBuilder: (context, index) {
+                                        final CandidateModel candidateModel =
+                                            CandidateModel.fromJson(snapshot
+                                                .data!.docs[index]
+                                                .data());
+                                        if (index == 0) {
+                                          candidates.value = [];
+                                        }
+                                        candidates.add(candidateModel);
+                                        return Padding(
+                                          padding: const EdgeInsets.all(8.0),
+                                          child: ListTile(
+                                            shape: RoundedRectangleBorder(
+                                                side: const BorderSide(
+                                                    color: Colors.black),
+                                                borderRadius:
+                                                    BorderRadius.circular(8.0)),
+                                            leading: Image.network(
+                                              candidateModel.symbolImageUrl,
+                                            ),
+                                            title: Text(
+                                              candidateModel.name,
+                                              style:
+                                                  const TextStyle(fontSize: 14),
+                                            ),
+                                            trailing: MaterialButton(
+                                              onPressed: () => Get.toNamed(
+                                                  "/candidate_edit?index=$index"),
+                                              shape: RoundedRectangleBorder(
+                                                  side: const BorderSide(
+                                                      color: Colors.black),
+                                                  borderRadius:
+                                                      BorderRadius.circular(
+                                                          8.0)),
+                                              child: const Text(
+                                                'Edit',
+                                                style: TextStyle(
+                                                    color: Colors.black),
+                                              ),
+                                            ),
+                                          ),
+                                        );
+                                      },
+                                    )
+                                  : const Padding(
+                                      padding: EdgeInsets.all(16.0),
+                                      child: Text(
+                                          'No candidates. Please add Candidates'),
                                     ),
-                                  );
-                                },
-                              ),
                             ],
                           ),
                         ),
